@@ -128,7 +128,8 @@ moviesRouter.get('/movies/:id', async (req, res, next) => {
     })
     .then((movie) => {
       if (!movie) {
-        throw new Error('Movie not found');
+        res.status(404).json({ error: 'Movie not found' });
+        return;
       }
       res.status(200).json(movie);
     })
@@ -143,31 +144,40 @@ moviesRouter.get('/movies/:id', async (req, res, next) => {
  * /movies/{id}:
  *   put:
  *     summary: Update a movie by ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The movie ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *               release_date:
+ *                 type: string
+ *                 format: date
+ *               overview:
+ *                 type: string
+ *               runtime:
+ *                 type: integer
  *     responses:
  *       200:
- *         description: The Movie ID details
+ *         description: The updated movie
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 type: object
- *                 properties:
- *                   id:
- *                     type: integer
- *                   title:
- *                     type: string
- *                   release_date:
- *                     type: string
- *                     format: date
- *                   overview:
- *                     type: string
- *                   runtime:
- *                     type: integer
+ *               type: object
  *       400:
- *         description: Bad request, invalid or missing data.
+ *         description: Bad request, invalid or missing data
  *       404:
- *         description: Movie not found.
+ *         description: Movie not found
  */
 moviesRouter.put('/movies/:id', async (req, res, next) => {
   const { title, release_date, overview, runtime } = req.body;
@@ -177,6 +187,7 @@ moviesRouter.put('/movies/:id', async (req, res, next) => {
   const movie = await movieRepository.findOneBy({
     id,
   });
+
   if (!movie) {
     res.status(404).json({ error: 'Movie not found' });
   }
@@ -191,7 +202,49 @@ moviesRouter.put('/movies/:id', async (req, res, next) => {
     })
     .then((movie) => res.status(200).json(movie))
     .catch((error) => {
-      res.status(404).json({ error });
+      res
+        .status(400)
+        .json({ error, message: 'Bad request, invalid or missing data.' });
       next();
     });
+});
+
+/**
+ * @swagger
+ * /movies/{id}:
+ *   delete:
+ *     summary: Delete a movie by ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The movie ID
+ *     responses:
+ *       200:
+ *         description: Movie deleted successfully
+ *       404:
+ *         description: Movie not found
+ *       500:
+ *         description: Something went wrong
+ */
+moviesRouter.delete('/movies/:id', async (req, res) => {
+  const movieRepository = AppDataSource.getRepository(Movie);
+  const id = parseInt(req.params.id);
+
+  const movie = await movieRepository.findOneBy({
+    id,
+  });
+
+  if (!movie) {
+    res.status(404).json({ error: 'Movie not found' });
+  }
+
+  await movieRepository
+    .delete(id)
+    .then(() => res.status(200).json({ message: 'Movie deleted successfully' }))
+    .catch((error) =>
+      res.status(500).json({ error, message: 'Something went wrong' })
+    );
 });
