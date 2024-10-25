@@ -137,3 +137,61 @@ moviesRouter.get('/movies/:id', async (req, res, next) => {
       next();
     });
 });
+
+/**
+ * @swagger
+ * /movies/{id}:
+ *   put:
+ *     summary: Update a movie by ID
+ *     responses:
+ *       200:
+ *         description: The Movie ID details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: integer
+ *                   title:
+ *                     type: string
+ *                   release_date:
+ *                     type: string
+ *                     format: date
+ *                   overview:
+ *                     type: string
+ *                   runtime:
+ *                     type: integer
+ *       400:
+ *         description: Bad request, invalid or missing data.
+ *       404:
+ *         description: Movie not found.
+ */
+moviesRouter.put('/movies/:id', async (req, res, next) => {
+  const { title, release_date, overview, runtime } = req.body;
+  const movieRepository = AppDataSource.getRepository(Movie);
+  const id = parseInt(req.params.id);
+
+  const movie = await movieRepository.findOneBy({
+    id,
+  });
+  if (!movie) {
+    res.status(404).json({ error: 'Movie not found' });
+  }
+
+  await movieRepository
+    .save({
+      ...movie,
+      title,
+      release_date,
+      overview,
+      runtime,
+    })
+    .then((movie) => res.status(200).json(movie))
+    .catch((error) => {
+      res.status(404).json({ error });
+      next();
+    });
+});
