@@ -33,8 +33,12 @@ export const moviesRouter = express.Router();
  */
 moviesRouter.get('/movies', async (_, res) => {
   const movieRepository = AppDataSource.getRepository(Movie);
-  const movies = await movieRepository.find();
-  res.json(movies);
+  await movieRepository
+    .find()
+    .then((movies) => res.json(movies))
+    .catch((error) => {
+      res.status(500).json({ error });
+    });
 });
 
 /**
@@ -67,19 +71,69 @@ moviesRouter.get('/movies', async (_, res) => {
  *               type: object
  */
 moviesRouter.post('/movies', async (req, res, next) => {
-  try {
-    const { title, release_date, overview, runtime } = req.body;
+  const { title, release_date, overview, runtime } = req.body;
 
-    const movieRepository = AppDataSource.getRepository(Movie);
-    const movie = movieRepository.create({
-      title,
-      release_date,
-      overview,
-      runtime,
+  const movieRepository = AppDataSource.getRepository(Movie);
+  const movie = movieRepository.create({
+    title,
+    release_date,
+    overview,
+    runtime,
+  });
+  await movieRepository
+    .save(movie)
+    .then((movie) => res.status(201).json(movie))
+    .catch((error) => {
+      res.status(400).json({ error });
+      next(error);
     });
-    await movieRepository.save(movie);
-    res.status(201).json(movie);
-  } catch (err) {
-    next(err);
-  }
+});
+
+/**
+ * @swagger
+ * /movies/{id}:
+ *   get:
+ *     summary: Get a movie by ID
+ *     responses:
+ *       200:
+ *         description: Movie details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: integer
+ *                   title:
+ *                     type: string
+ *                   release_date:
+ *                     type: string
+ *                     format: date
+ *                   overview:
+ *                     type: string
+ *                   runtime:
+ *                     type: integer
+ *       404:
+ *         description: Movie not found
+ */
+moviesRouter.get('/movies/:id', async (req, res, next) => {
+  const movieRepository = AppDataSource.getRepository(Movie);
+  const id = parseInt(req.params.id);
+
+  await movieRepository
+    .findOneBy({
+      id,
+    })
+    .then((movie) => {
+      if (!movie) {
+        throw new Error('Movie not found');
+      }
+      res.status(200).json(movie);
+    })
+    .catch((error) => {
+      res.status(404).json({ error: error.message });
+      next();
+    });
 });
