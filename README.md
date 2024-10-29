@@ -37,7 +37,7 @@ docker-compose down
 View Application Locally
 
 ```bash
-http://localhost:5001/
+http://localhost:3000/
 ```
 
 ## Installation
