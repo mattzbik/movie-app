@@ -1,6 +1,6 @@
-# movie-api
+# movie-app
 
-Personal Movie API
+Personal Movie APP
 
 ## Run Locally
 
