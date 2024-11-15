@@ -35,12 +35,15 @@ jobs:
           node-version: '20'
 
       - name: Install dependencies
+        working-directory: backend
         run: npm install
 
       - name: Check style
+        working-directory: backend
         run: npm run lint
 
       - name: Run tests
+        working-directory: backend
         run: |
           # Add your testing commands here, if any
           echo "No tests defined."
