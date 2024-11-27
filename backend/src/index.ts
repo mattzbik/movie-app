@@ -1,30 +1,58 @@
-/* eslint-disable no-console */
+import { ApolloServer } from '@apollo/server';
+import { expressMiddleware } from '@apollo/server/express4';
+import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
+import cors from 'cors';
 import express from 'express';
+import http from 'http';
+import { buildSchema } from 'type-graphql';
 import { AppDataSource } from './data-source';
-import { moviesRouter } from './routes/movies';
-import { setupSwagger } from './swagger';
+import { MovieResolver } from './resolvers/movie';
 
-const app = express();
-const port = process.env.PORT || 3000;
+interface MyContext {
+  token?: string;
+}
 
-AppDataSource.initialize()
-  .then(() => {
-    console.log('Data Source has been initialized!');
-  })
-  .catch((err) => {
-    console.error('Error during Data Source initialization:', err);
+const main = async () => {
+  AppDataSource.initialize()
+    .then(() => {
+      // eslint-disable-next-line no-console
+      console.log('Data Source has been initialized!');
+    })
+    .catch((err) => {
+      // eslint-disable-next-line no-console
+      console.error('Error during Data Source initialization:', err);
+    });
+
+  const schema = await buildSchema({
+    resolvers: [MovieResolver],
   });
 
-app.use(express.json());
+  const PORT = process.env.PORT || 4000;
+  const app = express();
+  // eslint-disable-next-line @typescript-eslint/no-misused-promises
+  const httpServer = http.createServer(app);
 
-app.get('/', (_, res) => {
-  res.send('Welcome to the Personal Movie API');
-});
+  const server = new ApolloServer<MyContext>({
+    schema,
+    plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
+  });
+  await server.start();
 
-app.use('/', moviesRouter);
+  app.use(
+    '/graphql',
+    cors<cors.CorsRequest>(),
+    express.json(),
+    expressMiddleware(server, {
+      context: async ({ req }) => ({ token: req.headers.token }),
+    })
+  );
 
-setupSwagger(app);
+  await new Promise<void>((resolve) =>
+    httpServer.listen({ port: PORT }, resolve)
+  );
 
-app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
-});
+  // eslint-disable-next-line no-console
+  console.log(`🚀 Server ready at http://localhost:4000/`);
+};
+
+main();
