@@ -10,18 +10,5 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
       - db_data:/var/lib/postgresql/data
-
-  api:
-    build: .
-    ports:
-      - "3000:3000"
-    environment:
-      DATABASE_URL: ${DATABASE_URL}
-    # Used for hot reloading
-    volumes:
-      - ./src:/app/src
-    depends_on:
-      - db
-
 volumes:
   db_data:
