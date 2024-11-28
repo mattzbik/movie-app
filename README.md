@@ -7,13 +7,13 @@ Personal Movie APP
 Clone the project
 
 ```bash
-  git clone https://github.com/mattzbik/movie-api.git
+  git clone https://github.com/mattzbik/movie-app.git
 ```
 
 Go to the project directory
 
 ```bash
-  cd movie-api
+  cd movie-app
 ```
 
 Install Image
@@ -34,10 +34,10 @@ Stop Server
 docker-compose down
 ```
 
-View Application Locally
+View GraphQL Interface Locally
 
 ```bash
-http://localhost:3000/
+http://localhost:4000/graphql
 ```
 
 ## Installation

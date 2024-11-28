@@ -1,0 +1,9 @@
+query Movie($id: Float!) {
+  movie(id: $id) {
+    id
+    title
+    release_date
+    overview
+    runtime
+  }
+}
