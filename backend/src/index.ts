@@ -13,7 +13,7 @@ interface MyContext {
 }
 
 const main = async () => {
-  AppDataSource.initialize()
+  await AppDataSource.initialize()
     .then(() => {
       // eslint-disable-next-line no-console
       console.log('Data Source has been initialized!');
@@ -52,7 +52,7 @@ const main = async () => {
   );
 
   // eslint-disable-next-line no-console
-  console.log(`🚀 Server ready at http://localhost:4000/`);
+  console.log(`🚀 Server ready at http://localhost:${PORT}/grapqhl`);
 };
 
 main();

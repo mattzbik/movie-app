@@ -6,7 +6,7 @@ dotenv.config();
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
-  url: process.env.DATABASE_URL,
+  url: process.env.POSTGRES_URL,
   synchronize: true, // Automatically synchronize database schema
   entities: [Movie], // Register the Movie entity
 });
