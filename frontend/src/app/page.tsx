@@ -63,7 +63,7 @@ export default function Home() {
             { title: 'Movie 9' },
           ].map((c, i) => (
             <Grid2 key={i} size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
-              <MovieCard key={i} title={c.title} />
+              <MovieCard key={i} title={c.title} id={i + 1} />
             </Grid2>
           ))}
         </Grid2>
