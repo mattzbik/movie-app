@@ -1,5 +1,22 @@
-import { Arg, Field, InputType, Mutation, Query, Resolver } from 'type-graphql';
+import {
+  Arg,
+  Field,
+  InputType,
+  Mutation,
+  ObjectType,
+  Query,
+  Resolver,
+} from 'type-graphql';
+import { AppDataSource } from '../data-source';
 import { Movie } from '../entity/Movie';
+
+@ObjectType()
+class PaginatedMovies {
+  @Field()
+  count: number;
+  @Field(() => [Movie])
+  movies: Movie[];
+}
 
 @InputType()
 class CreateMovieInput {
@@ -36,6 +53,32 @@ export class MovieResolver {
   @Query(() => Movie, { nullable: true })
   async movie(@Arg('id') id: number): Promise<Movie | null> {
     return await Movie.findOne({ where: { id } });
+  }
+
+  /**
+   * @todo Handle pagination correctly. Currently only adding limit and skip but I am not checking to see if there is more results based on the limit, skip, and movie count.
+   */
+  @Query(() => PaginatedMovies, { nullable: true })
+  async movies(
+    @Arg('limit') limit: number,
+    @Arg('skip') skip?: number
+  ): Promise<PaginatedMovies> {
+    const realLimit = Math.min(50, limit);
+
+    const movies = await AppDataSource.getRepository(Movie)
+      .createQueryBuilder('movie')
+      .skip(skip ?? 0)
+      .take(limit)
+      .getMany();
+
+    const movieCount = await AppDataSource.getRepository(Movie)
+      .createQueryBuilder('movie')
+      .getCount();
+
+    return {
+      count: movieCount,
+      movies: movies.slice(0, realLimit),
+    };
   }
 
   @Mutation(() => Movie)

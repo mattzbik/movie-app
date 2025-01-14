@@ -9,7 +9,8 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
-      - db_data:/var/lib/postgresql/data
+      - db_data:/var/lib/postgresql/data # Persist data in a named volume.
+      - ./postgresql/init:/docker-entrypoint-initdb.d # Map local init file to containers entry point. 
 
   backend:
     image: node:22.11.0-alpine3.20
@@ -38,4 +39,4 @@ services:
       - backend
 
 volumes:
-  db_data:
+  db_data: # named volume
