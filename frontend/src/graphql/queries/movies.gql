@@ -1,0 +1,12 @@
+query Movies($limit: Float!, $skip: Float!) {
+  movies(limit: $limit, skip: $skip) {
+    count
+    movies {
+      id
+      title
+      release_date
+      overview
+      runtime
+    }
+  }
+}

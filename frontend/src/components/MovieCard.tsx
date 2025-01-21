@@ -4,13 +4,13 @@ import Link from 'next/link';
 import placeholderImage from '../public/default.jpg';
 
 interface MovieProps {
-  id: number;
+  id: string;
   title: string;
   image?: string;
 }
 
 export const MovieCard: React.FC<MovieProps> = ({ image, title, id }) => (
-  <Card sx={{ maxWidth: 300 }} raised>
+  <Card sx={{ maxWidth: 300, maxHeight: 420 }} raised>
     <CardActionArea>
       <Link href={'/movie[id]'} as={`/movie/${id}`}>
         <Image
@@ -19,7 +19,15 @@ export const MovieCard: React.FC<MovieProps> = ({ image, title, id }) => (
           style={{ width: '100%', height: '100%' }}
         />
         <CardContent>
-          <Typography variant="h5">{title}</Typography>
+          <Typography
+            variant="h6"
+            align="center"
+            textOverflow="ellipsis"
+            overflow="hidden"
+            whiteSpace="nowrap"
+          >
+            {title}
+          </Typography>
         </CardContent>
       </Link>
     </CardActionArea>

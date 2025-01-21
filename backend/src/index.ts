@@ -23,17 +23,15 @@ const main = async () => {
       console.error('Error during Data Source initialization:', err);
     });
 
-  const schema = await buildSchema({
-    resolvers: [MovieResolver],
-  });
-
   const PORT = process.env.PORT || 4000;
   const app = express();
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
   const httpServer = http.createServer(app);
 
   const server = new ApolloServer<MyContext>({
-    schema,
+    schema: await buildSchema({
+      resolvers: [MovieResolver],
+    }),
     plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
   });
   await server.start();

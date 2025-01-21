@@ -1,0 +1,9 @@
+mutation UpdateMovie($input: UpdateMovieInput!, $id: Float!) {
+  updateMovie(options: $input, id: $id) {
+    id
+    title
+    release_date
+    overview
+    runtime
+  }
+}
