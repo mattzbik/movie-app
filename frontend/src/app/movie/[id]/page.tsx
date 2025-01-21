@@ -1,5 +1,6 @@
 'use client';
 
+import { AppHeader } from '@/components/AppHeader';
 import { useGetId } from '@/hooks/useGetId';
 import { Card } from '@mui/material';
 
@@ -9,7 +10,11 @@ interface MovieProps {
 
 const Movie: React.FC<MovieProps> = ({}) => {
   const id = useGetId();
-  return <Card>{id} Test Page</Card>;
+  return (
+    <AppHeader>
+      <Card>{id} Test Page</Card>
+    </AppHeader>
+  );
 };
 
 export default Movie;
