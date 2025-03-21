@@ -65,13 +65,15 @@ export class MovieResolver {
   ): Promise<PaginatedMovies> {
     const realLimit = Math.min(50, limit);
 
-    const movies = await AppDataSource.getRepository(Movie)
+    const movieRepository = AppDataSource.getRepository(Movie);
+
+    const movies = await movieRepository
       .createQueryBuilder('movie')
       .skip(skip ?? 0)
       .take(limit)
       .getMany();
 
-    const movieCount = await AppDataSource.getRepository(Movie)
+    const movieCount = await movieRepository
       .createQueryBuilder('movie')
       .getCount();
 

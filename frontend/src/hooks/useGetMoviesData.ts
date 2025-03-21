@@ -1,25 +1,17 @@
 import { useMoviesQuery } from '@/generated/types';
-import { HookResult } from '@/types/types';
+import { HookResult, Movie } from '@/types/types';
 import { useEffect, useState } from 'react';
 
-interface MovieResponse {
+interface MoviesResponse {
   count: number;
   movies: Movie[];
-}
-
-interface Movie {
-  id: string;
-  title: string;
-  overview: string;
-  release_date: string;
-  run_time: number;
 }
 
 export const useGetMoviesData = (
   limit: number,
   skip: number
-): HookResult<MovieResponse> => {
-  const [state, setState] = useState<HookResult<MovieResponse>>({
+): HookResult<MoviesResponse> => {
+  const [state, setState] = useState<HookResult<MoviesResponse>>({
     data: null,
     loading: true,
     error: null,
